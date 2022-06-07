@@ -28,7 +28,7 @@ class Post(models.Model):
         upload_to='posts/', null=True, blank=True)
     group = models.ForeignKey(
         Group, on_delete=models.SET_NULL,
-        related_name="posts", blank=True, null=True
+        related_name='posts', blank=True, null=True
     )
 
     def __str__(self):
@@ -64,4 +64,7 @@ class Follow(models.Model):
     )
 
     class Meta:
-        unique_together = ('user', 'following',)
+        constraints = [models.UniqueConstraint(
+            fields=('user', 'following',),
+            name='unique_follow'
+        )]
