@@ -26,6 +26,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Comment
+        read_only_fields = ('post',)
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -35,14 +36,15 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
+    queryset = User.objects.all()
     user = serializers.SlugRelatedField(
         slug_field='username',
         required=False,
         default=serializers.CurrentUserDefault(),
-        queryset=User.objects.all()
+        queryset=queryset
     )
     following = serializers.SlugRelatedField(
-        slug_field='username', queryset=User.objects.all()
+        slug_field='username', queryset=queryset
     )
 
     def validate(self, data):
