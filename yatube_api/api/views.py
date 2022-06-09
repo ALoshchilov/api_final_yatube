@@ -7,7 +7,7 @@ from api.permissions import ReadOnly, Author
 from api.serializers import (
     CommentSerializer, GroupSerializer, FollowSerializer, PostSerializer
 )
-from posts.models import Comment, Follow, Group, Post
+from posts.models import Group, Post
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -18,7 +18,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         return get_object_or_404(Post, id=self.kwargs.get('post_id'))
 
     def get_queryset(self):
-        return Comment.objects.filter(post__id=self.get_post().id)
+        return self.get_post().comments.all()
 
     def perform_create(self, serializer, **kwargs):
         serializer.save(
@@ -39,7 +39,7 @@ class FollowViewSet(
     search_fields = ('following__username',)
 
     def get_queryset(self):
-        return Follow.objects.filter(user__id=self.request.user.id)
+        return self.request.user.follower.all()
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):

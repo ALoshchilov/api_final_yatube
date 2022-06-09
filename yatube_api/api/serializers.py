@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-from django.shortcuts import get_object_or_404
 
 from posts.models import Comment, Follow, Group, Post, User
 
@@ -47,12 +46,10 @@ class FollowSerializer(serializers.ModelSerializer):
         slug_field='username', queryset=queryset
     )
 
-    def validate(self, data):
-        author = get_object_or_404(User, username=data.get('following'))
-        user = data.get('user')
-        if author == user:
+    def validate_following(self, following):
+        if self.context['request'].user == following:
             raise serializers.ValidationError(NOT_FOLLOW_YOURSELF_MESSAGE)
-        return data
+        return following
 
     class Meta:
         model = Follow
